@@ -1,0 +1,72 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+main {
+    flex-grow: 1;
+    width: 60%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+}
+
+aside {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 200px; /* Ajustar según el tamaño de las imágenes */
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.left-ads {
+    left: 0;
+}
+
+.right-ads {
+    right: 0;
+}
+
+h1, h2, form {
+    margin: 20px 0;
+}
+
+/* Estilos generales para botones */
+button {
+    background-color: #4CAF50; /* Color de fondo verde */
+    color: white; /* Texto blanco */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor en forma de mano al pasar el ratón */
+    transition: background-color 0.3s ease; /* Transición suave de color */
+}
+
+button:hover {
+    background-color: #45a049; /* Color más oscuro al pasar el ratón */
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 300px; /* Ancho del campo de texto */
+    margin-right: 10px; /* Espacio a la derecha */
+    border: 2px solid #ccc; /* Borde gris */
+    border-radius: 5px; /* Bordes redondeados */
+    box-sizing: border-box; /* La altura y el ancho incluyen padding y border */
+}
+
+/* Estilo específico para hacer que el botón de cerrar sesión sea menos prominente */
+form[action*="logout"] button {
+    background-color: #f44336; /* Color de fondo rojo */
+}
+
+form[action*="logout"] button:hover {
+    background-color: #d32f2f; /* Rojo oscuro al pasar el ratón */
+}

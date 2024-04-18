@@ -2,23 +2,39 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import csv
 import os
 import networkx as nx
+
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'
+
+# Ruta Raiz
+@app.route('/')
+def index():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
 # Ruta de la página de inicio de sesión
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'username' in session:
+        # Si el usuario ya tiene una sesión, redirigir al dashboard directamente
+        return redirect(url_for('dashboard'))
+
     error = None
     if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
         if verificar_credenciales(usuario, password):
-            # Si las credenciales son correctas, redirigir a la página de éxito
             session['username'] = usuario
-            
             return redirect(url_for('dashboard'))
         else:
             error = 'Credenciales inválidas. Por favor, inténtalo de nuevo.'
     return render_template('login.html', error=error)
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 # Función para verificar las credenciales en el archivo CSV
 
@@ -96,8 +112,6 @@ def dashboard():
     pagerank_productos = calcular_pagerank(datos_busqueda_usuarios)
     productos_recomendados = obtener_productos_recomendados(pagerank_productos)
     return render_template('dashboard.html', productos_recomendados=productos_recomendados)
-
-
 
 
 # Mostrar los productos recomendados

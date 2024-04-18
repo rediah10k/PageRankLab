@@ -1,26 +1,63 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dashboard</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <header>
         <h1>Buscador de Productos</h1>
-    <form method="post" action="/search">
-        <input type="text" name="query" placeholder="Buscar...">
-        <button type="submit">Buscar</button>
-    </form>
-    <h2>Productos Recomendados:</h2>
-    <ul>
-        {% for producto, pagerank in productos_recomendados %}
-            <li>{{ producto }} - PageRank: {{ pagerank }}</li>
+    </header>
+
+    <aside class="left-ads">
+        <!-- Suponiendo imágenes de anuncios -->
+        {% for i in range(10) %}
+        <img src="url_to_ad_image{{ i }}.jpg" alt="Anuncio {{ i }}">
         {% endfor %}
-    </ul>
-        
-        <script src="" async defer></script>
-    </body>
+    </aside>
+
+    <main>
+        <form method="post" action="/search" onsubmit="return validateForm()">
+            <input type="text" name="query" placeholder="Buscar..." id="searchQuery">
+            <button type="submit">Buscar</button>
+        </form>
+        <h2>Productos Recomendados:</h2>
+        <ul>
+            {% for producto, pagerank in productos_recomendados %}
+            <li>{{ producto }} - PageRank: {{ pagerank }}</li>
+            {% endfor %}
+        </ul>
+    </main>
+     <!-- Botón de Logout -->
+     <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Cerrar Sesión</button>
+    </form>
+
+    <aside class="right-ads">
+        <!-- Suponiendo imágenes de anuncios -->
+        {% for i in range(10, 20) %}
+        <img src="url_to_ad_image{{ i }}.jpg" alt="Anuncio {{ i }}">
+        {% endfor %}
+    </aside>
+
+    <script>
+        function validateForm() {
+            const query = document.getElementById('searchQuery').value;
+            if (query.trim() === '') {
+                alert('Por favor ingrese un término de búsqueda.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+    <script src="" async defer></script>
+</body>
+
 </html>
