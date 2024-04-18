@@ -5,28 +5,55 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Dashboard</title>
-    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.default.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"></script>
+<style>
+    .selectize-control {
+        width: 100%; /* Ajusta el ancho al 100% del contenedor padre */
+        max-width: 400px; /* Establece un ancho máximo para que no sea demasiado ancho */
+    }
+    .selectize-dropdown {
+        display: none; /* Ocultar inicialmente el dropdown */
+    }
+    .has-options .selectize-dropdown {
+        display: block; /* Mostrar el dropdown sólo cuando hay opciones filtradas */
+    }
+</style>
 </head>
 
 <body>
     <header>
         <h1>Buscador de Productos</h1>
     </header>
-
+    
+    
     <aside class="left-ads">
-        <!-- Suponiendo imágenes de anuncios -->
-        {% for i in range(10) %}
-        <img src="url_to_ad_image{{ i }}.jpg" alt="Anuncio {{ i }}">
+        {% for producto, anuncios in anuncios_asignados.items() %}
+        {% for anuncio in anuncios %}
+            <img src="{{ anuncio }}" alt="{{ producto }}">
         {% endfor %}
+    {% endfor %}
+    
     </aside>
 
     <main>
-        <form method="post" action="/search" onsubmit="return validateForm()">
-            <input type="text" name="query" placeholder="Buscar..." id="searchQuery">
+      
+        <form class="search-form" method="post" action="/search" onsubmit="return validateForm()">
+            <select id="searchQuery" name="query" placeholder="Buscar...">
+                <option value="">Seleccione un artículo...</option>
+                {% for articulo in elementos_tienda %}
+                <option value="{{ articulo }}">{{ articulo }}</option>
+                {% endfor %}
+            </select>
             <button type="submit">Buscar</button>
+            
         </form>
+
+
         <h2>Productos Recomendados:</h2>
         <ul>
             {% for producto, pagerank in productos_recomendados %}
@@ -40,24 +67,47 @@
     </form>
 
     <aside class="right-ads">
-        <!-- Suponiendo imágenes de anuncios -->
-        {% for i in range(10, 20) %}
-        <img src="url_to_ad_image{{ i }}.jpg" alt="Anuncio {{ i }}">
+        <!-- Suponiendo imágenes de anuncios desde anuncios_asignados -->
+        {% for producto, anuncios in anuncios_asignados.items() %}
+            {% for anuncio in anuncios %}
+                <img src="{{ anuncio }}" alt="{{ producto }}">
+            {% endfor %}
         {% endfor %}
     </aside>
 
     <script>
-        function validateForm() {
-            const query = document.getElementById('searchQuery').value;
-            if (query.trim() === '') {
-                alert('Por favor ingrese un término de búsqueda.');
-                return false;
+   
+            function validateForm() {
+                const query = $('#searchQuery').val();
+                if (query.trim() === '') {
+                    alert('Por favor ingrese un término de búsqueda.');
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
-    </script>
 
-    <script src="" async defer></script>
+            $(document).ready(function() {
+                $('#searchQuery').selectize({
+                    create: false,
+                    sortField: 'text',
+                    placeholder: 'Buscar artículo...',
+                    openOnFocus: false,
+                    onType: function(str) {
+                        if (str !== "") {
+                            this.$dropdown.css('display', 'block');
+                        } else {
+                            this.$dropdown.css('display', 'none');
+                        }
+                    }
+                });
+            });
+    
+                    
+    </script>
+ <script src="" async defer></script>
+
+
+ 
 </body>
 
 </html>

@@ -55,7 +55,7 @@ button:hover {
 
 input[type="text"] {
     padding: 10px;
-    width: 300px; /* Ancho del campo de texto */
+    width: 100%; /* Ancho del campo de texto */
     margin-right: 10px; /* Espacio a la derecha */
     border: 2px solid #ccc; /* Borde gris */
     border-radius: 5px; /* Bordes redondeados */
@@ -69,4 +69,12 @@ form[action*="logout"] button {
 
 form[action*="logout"] button:hover {
     background-color: #d32f2f; /* Rojo oscuro al pasar el ratón */
+}
+
+.search-form {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
 }

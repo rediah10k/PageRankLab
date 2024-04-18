@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import csv
 import os
 import networkx as nx
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'
@@ -89,6 +90,20 @@ def cargar_datos_busqueda(filename):
     return datos_busqueda_usuarios
 
 
+
+
+
+def cargar_datos_articulos(filename):
+    articulos = {}
+    with open(filename, 'r') as file:
+        lector_csv = csv.DictReader(file)
+        for row in lector_csv:
+           articulo = row['articulo']
+
+    return articulos
+
+
+
 def calcular_pagerank(datos_busqueda_usuarios):
     grafo = nx.DiGraph()
     for username, queries in datos_busqueda_usuarios.items():
@@ -105,13 +120,35 @@ def calcular_pagerank(datos_busqueda_usuarios):
 def obtener_productos_recomendados(pagerank_productos):
     return sorted(pagerank_productos.items(), key=lambda x: x[1], reverse=True)[:6]
 
+def asignar_anuncios(productos_recomendados):
+    total_pagerank = sum(pr for _, pr in productos_recomendados)
+    anuncios_por_producto = {}
+
+    for producto, pagerank in productos_recomendados:
+        
+        prodroute = producto.replace(" ", "_")
+        numero_anuncios = int((pagerank / total_pagerank) * 20)  # 20 es el número total de anuncios
+        anuncios = []
+        anuncios.append(r"C:\Users\hjara\Downloads\pageRankTeam\pageRank\static\{prodoute}.jpg")
+        anuncios_por_producto[producto] = anuncios
+
+    return anuncios_por_producto
+
+
+
 # Ejemplo de uso
 @app.route('/dashboard')
 def dashboard():
+    # Carga de otros datos necesarios, ejemplos con funciones ficticias
     datos_busqueda_usuarios = cargar_datos_busqueda('search_history.csv')
     pagerank_productos = calcular_pagerank(datos_busqueda_usuarios)
     productos_recomendados = obtener_productos_recomendados(pagerank_productos)
-    return render_template('dashboard.html', productos_recomendados=productos_recomendados)
+    anuncios_asignados = asignar_anuncios(productos_recomendados)
+    df = pd.read_csv('articles.csv')
+    elementos_tienda = df['articulo'].tolist()
+ 
+    
+    return render_template('dashboard.html', productos_recomendados=productos_recomendados, elementos_tienda=elementos_tienda,anuncios_asignados=anuncios_asignados)
 
 
 # Mostrar los productos recomendados
