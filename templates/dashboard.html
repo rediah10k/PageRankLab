@@ -32,10 +32,14 @@
     
     
     <aside class="left-ads">
-        {% for producto, anuncios in anuncios_asignados.items() %}
-        {% for anuncio in anuncios %}
-            <img src="{{ anuncio }}" alt="{{ producto }}">
-        {% endfor %}
+        {% for producto, anuncio in anuncios_asignados.items() %}
+        
+            <form class="search-form" method="post" action="/search" >
+                <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
+            <p>{{ producto}}</p>
+                <input type="hidden" name="query" value="{{ producto }}">
+                
+            </form>
     {% endfor %}
     
     </aside>
@@ -67,16 +71,25 @@
     </form>
 
     <aside class="right-ads">
-        <!-- Suponiendo imágenes de anuncios desde anuncios_asignados -->
-        {% for producto, anuncios in anuncios_asignados.items() %}
-            {% for anuncio in anuncios %}
-                <img src="{{ anuncio }}" alt="{{ producto }}">
-            {% endfor %}
-        {% endfor %}
+
+        {% for producto, anuncio in anuncios_asignados.items() %}
+        
+            <form class="search-form" method="post" action="/search" >
+                <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
+            <p>{{ producto}}</p>
+                <input type="hidden" name="query" value="{{ producto }}">
+                
+            </form>
+    {% endfor %}
+
     </aside>
 
     <script>
-   
+        function submitForm() {
+            var form = document.querySelector('.search-form');
+            form.submit();
+            
+        }
             function validateForm() {
                 const query = $('#searchQuery').val();
                 if (query.trim() === '') {

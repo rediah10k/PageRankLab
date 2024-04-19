@@ -90,9 +90,6 @@ def cargar_datos_busqueda(filename):
     return datos_busqueda_usuarios
 
 
-
-
-
 def cargar_datos_articulos(filename):
     articulos = {}
     with open(filename, 'r') as file:
@@ -103,34 +100,50 @@ def cargar_datos_articulos(filename):
     return articulos
 
 
-
-def calcular_pagerank(datos_busqueda_usuarios):
+def procesar_consultas(datos_busqueda_usuarios, session_username):
     grafo = nx.DiGraph()
-    for username, queries in datos_busqueda_usuarios.items():
-        for i in range(len(queries) - 1):
-            query_actual = queries[i]
-            query_siguiente = queries[i + 1]
+
+    if not datos_busqueda_usuarios:
+        return nx.pagerank(grafo) 
+    consultas_usuario = datos_busqueda_usuarios[session_username]
+
+
+    for consultas in consultas_usuario:
+        for i in range(len(consultas_usuario) - 1):
+            query_actual = consultas_usuario[i]
+            query_siguiente = consultas_usuario[i + 1]
             if grafo.has_edge(query_actual, query_siguiente):
                 grafo[query_actual][query_siguiente]["weight"] += 1
             else:
                 grafo.add_edge(query_actual, query_siguiente, weight=1)
+
+
     return nx.pagerank(grafo)
 
-# Función para obtener los productos recomendados
+
 def obtener_productos_recomendados(pagerank_productos):
-    return sorted(pagerank_productos.items(), key=lambda x: x[1], reverse=True)[:6]
+    return sorted(pagerank_productos.items(), key=lambda x: x[1], reverse=True)[:5]
 
 def asignar_anuncios(productos_recomendados):
     total_pagerank = sum(pr for _, pr in productos_recomendados)
     anuncios_por_producto = {}
 
     for producto, pagerank in productos_recomendados:
+        # Reemplaza espacios con guiones bajos
+        producto_formato = producto.replace(" ", "_")
         
-        prodroute = producto.replace(" ", "_")
-        numero_anuncios = int((pagerank / total_pagerank) * 20)  # 20 es el número total de anuncios
+        # Calcula el número de anuncios proporcional al pagerank
+        numero_anuncios = int((pagerank / total_pagerank) * 5)  # 5 es el número total de anuncios aquí, ajusta si necesario
+        
+        # Lista para guardar las rutas de los anuncios
         anuncios = []
-        anuncios.append(r"C:\Users\hjara\Downloads\pageRankTeam\pageRank\static\{prodoute}.jpg")
-        anuncios_por_producto[producto] = anuncios
+        
+        # Crea la ruta del archivo y la añade a la lista de anuncios
+        # Utiliza una cadena normal y agrega manualmente una barra
+        anuncios.append("./static/img/{}.jpg".format(producto_formato))
+        
+        # Guarda la lista de anuncios en el diccionario, asociada al producto original
+        anuncios_por_producto[producto] = anuncios[0]
 
     return anuncios_por_producto
 
@@ -139,9 +152,10 @@ def asignar_anuncios(productos_recomendados):
 # Ejemplo de uso
 @app.route('/dashboard')
 def dashboard():
+    username = session['username']
     # Carga de otros datos necesarios, ejemplos con funciones ficticias
     datos_busqueda_usuarios = cargar_datos_busqueda('search_history.csv')
-    pagerank_productos = calcular_pagerank(datos_busqueda_usuarios)
+    pagerank_productos = procesar_consultas(datos_busqueda_usuarios,username)
     productos_recomendados = obtener_productos_recomendados(pagerank_productos)
     anuncios_asignados = asignar_anuncios(productos_recomendados)
     df = pd.read_csv('articles.csv')
