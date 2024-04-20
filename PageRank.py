@@ -38,7 +38,6 @@ def logout():
     return redirect(url_for('login'))
 
 # Función para verificar las credenciales en el archivo CSV
-
 def verificar_credenciales(usuario, password):
     with open('usuario.csv', 'r') as archivo:
         lector_csv = csv.DictReader(archivo)
@@ -74,7 +73,6 @@ def search():
     return redirect(url_for('dashboard'))
 
 
-
 # Ruta de la página de éxito después del login
 def cargar_datos_busqueda(filename):
     datos_busqueda_usuarios = {}
@@ -91,12 +89,12 @@ def cargar_datos_busqueda(filename):
 
 
 def cargar_datos_articulos(filename):
-    articulos = {}
+    articulos = []
     with open(filename, 'r') as file:
         lector_csv = csv.DictReader(file)
         for row in lector_csv:
            articulo = row['articulo']
-
+           articulos.append(articulo)
     return articulos
 
 
@@ -120,9 +118,18 @@ def procesar_consultas(datos_busqueda_usuarios, session_username):
 
     return nx.pagerank(grafo)
 
-
 def obtener_productos_recomendados(pagerank_productos):
     return sorted(pagerank_productos.items(), key=lambda x: x[1], reverse=True)[:5]
+
+def obtener_todos_los_productos(pagerank_productos, lista_articulos):
+     # Inicializa un diccionario con todos los artículos y un pagerank predeterminado de 0
+    articulos_con_pagerank = {articulo: 0 for articulo in lista_articulos}
+    
+    # Actualiza el pagerank para los artículos que están en pagerank_productos
+    articulos_con_pagerank.update(pagerank_productos)
+
+    # Devuelve la lista de artículos ordenada por su pagerank de mayor a menor
+    return sorted(articulos_con_pagerank.items(), key=lambda x: x[1], reverse=True)
 
 def asignar_anuncios(productos_recomendados):
     total_pagerank = sum(pr for _, pr in productos_recomendados)
@@ -160,9 +167,9 @@ def dashboard():
     anuncios_asignados = asignar_anuncios(productos_recomendados)
     df = pd.read_csv('articles.csv')
     elementos_tienda = df['articulo'].tolist()
- 
+    todos_los_productos = obtener_todos_los_productos(pagerank_productos, elementos_tienda)
     
-    return render_template('dashboard.html', productos_recomendados=productos_recomendados, elementos_tienda=elementos_tienda,anuncios_asignados=anuncios_asignados)
+    return render_template('dashboard.html', productos_ordenados=todos_los_productos,productos_recomendados=productos_recomendados, elementos_tienda=elementos_tienda,anuncios_asignados=anuncios_asignados)
 
 
 # Mostrar los productos recomendados

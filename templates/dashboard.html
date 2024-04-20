@@ -8,53 +8,61 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.default.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.default.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"></script>
-<style>
-    .selectize-control {
-        width: 100%; /* Ajusta el ancho al 100% del contenedor padre */
-        max-width: 400px; /* Establece un ancho máximo para que no sea demasiado ancho */
-    }
-    .selectize-dropdown {
-        display: none; /* Ocultar inicialmente el dropdown */
-    }
-    .has-options .selectize-dropdown {
-        display: block; /* Mostrar el dropdown sólo cuando hay opciones filtradas */
-    }
-</style>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+    <style>
+        .selectize-control {
+            width: 100%;
+            /* Ajusta el ancho al 100% del contenedor padre */
+            max-width: 400px;
+            /* Establece un ancho máximo para que no sea demasiado ancho */
+        }
+
+        .selectize-dropdown {
+            display: none;
+            /* Ocultar inicialmente el dropdown */
+        }
+
+        .has-options .selectize-dropdown {
+            display: block;
+            /* Mostrar el dropdown sólo cuando hay opciones filtradas */
+        }
+    </style>
 </head>
 
 <body>
     <header>
         <h1>Buscador de Productos</h1>
     </header>
-    
-    
+
+
     <aside class="left-ads">
         {% for producto, anuncio in anuncios_asignados.items() %}
-        
-            <form class="search-form" method="post" action="/search" >
-                <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
-            <p>{{ producto}}</p>
-                <input type="hidden" name="query" value="{{ producto }}">
-                
-            </form>
-    {% endfor %}
-    
+        <form class="search-form" method="post" action="/search">
+            <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
+            <p>{{ producto }}</p>
+            <input type="hidden" name="query" value="{{ producto }}">
+        </form>
+        {% endfor %}
     </aside>
 
+
     <main>
-      
+
         <form class="search-form" method="post" action="/search" onsubmit="return validateForm()">
-            <select id="searchQuery" name="query" placeholder="Buscar...">
+            <select id="searchQuery" name="query" class="select-custom" placeholder="Buscar...">
                 <option value="">Seleccione un artículo...</option>
-                {% for articulo in elementos_tienda %}
-                <option value="{{ articulo }}">{{ articulo }}</option>
+                {% for articulo in productos_ordenados %}
+                <option value="{{ articulo[0] }}">{{ articulo[0] }}</option>
                 {% endfor %}
             </select>
             <button type="submit">Buscar</button>
-            
         </form>
 
 
@@ -65,22 +73,22 @@
             {% endfor %}
         </ul>
     </main>
-     <!-- Botón de Logout -->
-     <form action="{{ url_for('logout') }}" method="post">
+    <!-- Botón de Logout -->
+    <form action="{{ url_for('logout') }}" method="post">
         <button type="submit">Cerrar Sesión</button>
     </form>
 
     <aside class="right-ads">
 
         {% for producto, anuncio in anuncios_asignados.items() %}
-        
-            <form class="search-form" method="post" action="/search" >
-                <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
+
+        <form class="search-form" method="post" action="/search">
+            <img height="150px" width="250px" src="{{ anuncio }}" onclick="submitForm()" style="cursor: pointer;">
             <p>{{ producto}}</p>
-                <input type="hidden" name="query" value="{{ producto }}">
-                
-            </form>
-    {% endfor %}
+            <input type="hidden" name="query" value="{{ producto }}">
+
+        </form>
+        {% endfor %}
 
     </aside>
 
@@ -88,39 +96,33 @@
         function submitForm() {
             var form = document.querySelector('.search-form');
             form.submit();
-            
+
         }
-            function validateForm() {
-                const query = $('#searchQuery').val();
-                if (query.trim() === '') {
-                    alert('Por favor ingrese un término de búsqueda.');
-                    return false;
-                }
-                return true;
+        function validateForm() {
+            const query = $('#searchQuery').val();
+            if (query.trim() === '') {
+                alert('Por favor ingrese un término de búsqueda.');
+                return false;
             }
+            return true;
+        }
 
-            $(document).ready(function() {
-                $('#searchQuery').selectize({
-                    create: false,
-                    sortField: 'text',
-                    placeholder: 'Buscar artículo...',
-                    openOnFocus: false,
-                    onType: function(str) {
-                        if (str !== "") {
-                            this.$dropdown.css('display', 'block');
-                        } else {
-                            this.$dropdown.css('display', 'none');
-                        }
+        $(document).ready(function () {
+            $('#searchQuery').selectize({
+                create: false,
+                placeholder: 'Buscar artículo...',
+                openOnFocus: false,
+                onType: function (str) {
+                    if (str !== "") {
+                        this.$dropdown.css('display', 'block');
+                    } else {
+                        this.$dropdown.css('display', 'none');
                     }
-                });
+                }
             });
-    
-                    
+        }); 
     </script>
- <script src="" async defer></script>
-
-
- 
+    <script src="" async defer></script>
 </body>
 
 </html>

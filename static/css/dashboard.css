@@ -78,3 +78,7 @@ form[action*="logout"] button:hover {
     flex-direction: column;
     width: 80%;
 }
+
+.selectize-control.single .selectize-input:after {
+    display: none !important;
+}
